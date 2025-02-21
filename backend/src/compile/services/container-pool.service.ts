@@ -78,11 +78,11 @@ export class ContainerPoolService {
   private getImageNameForLanguage(language: string): string {
     switch (language) {
       case 'cpp':
-        return 'my-cpp-image';
+        return 'quinceywong/onlineexamsystem:my-cpp-image'; // 完整的镜像名称
       case 'java':
-        return 'my-java-image';
+        return 'quinceywong/onlineexamsystem:my-java-image'; // 完整的镜像名称
       case 'python':
-        return 'my-python-image';
+        return 'quinceywong/onlineexamsystem:my-python-image'; // 完整的镜像名称
       default:
         throw new Error(`Unsupported language: ${language}`);
     }
