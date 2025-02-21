@@ -52,9 +52,19 @@ export class ContainerPoolService {
           );
           console.log(`Started container ${containerName}`);
         } else {
-          console.log(
-            `Container ${containerName} already exists, skipping startup.`,
+          // 容器已存在，检查是否已启动
+          const { stdout } = await execAsync(
+            `docker inspect -f '{{.State.Running}}' ${containerName}`,
           );
+          if (stdout.trim() !== 'true') {
+            // 如果容器未运行，则启动它
+            await execAsync(`docker start ${containerName}`);
+            console.log(
+              `Container ${containerName} was stopped. Started it again.`,
+            );
+          } else {
+            console.log(`Container ${containerName} is already running.`);
+          }
         }
       } catch (error) {
         console.error(
