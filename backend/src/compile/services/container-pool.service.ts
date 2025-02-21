@@ -56,6 +56,7 @@ export class ContainerPoolService {
           const { stdout } = await execAsync(
             `docker inspect -f '{{.State.Running}}' ${containerName}`,
           );
+          console.log(stdout.trim());
           if (stdout.trim() !== 'true') {
             // 如果容器未运行，则启动它
             await execAsync(`docker start ${containerName}`);
@@ -78,11 +79,11 @@ export class ContainerPoolService {
   private getImageNameForLanguage(language: string): string {
     switch (language) {
       case 'cpp':
-        return 'quinceywong/onlineexamsystem:my-cpp-image'; // 完整的镜像名称
+        return 'my-cpp-image';
       case 'java':
-        return 'quinceywong/onlineexamsystem:my-java-image'; // 完整的镜像名称
+        return 'my-java-image';
       case 'python':
-        return 'quinceywong/onlineexamsystem:my-python-image'; // 完整的镜像名称
+        return 'my-python-image';
       default:
         throw new Error(`Unsupported language: ${language}`);
     }
