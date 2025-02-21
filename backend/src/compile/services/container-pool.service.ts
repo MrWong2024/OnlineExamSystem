@@ -53,10 +53,16 @@ export class ContainerPoolService {
           console.log(`Started container ${containerName}`);
         } else {
           // 容器已存在，检查是否已启动
+          /*
+           await execAsync(`docker inspect -f "{{.State.Running}}" ${containerName}`,)输出的是
+           { stdout: "'true'\n", stderr: '' }
+           而不是
+           { stdout: 'true\n', stderr: '' }
+          */
           const { stdout } = await execAsync(
-            `docker inspect -f '{{.State.Running}}' ${containerName}`,
+            `docker inspect -f "{{.State.Running}}" ${containerName}`,
           );
-          console.log(stdout.trim());
+
           if (stdout.trim() !== 'true') {
             // 如果容器未运行，则启动它
             await execAsync(`docker start ${containerName}`);
