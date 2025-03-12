@@ -2,6 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { Mutex } from 'async-mutex';
 
 const execAsync = promisify(exec);
 
@@ -12,6 +13,9 @@ export class ContainerPoolService {
   private pythonContainerCount = 4; // Python容器数量
 
   private containerPools: { [key: string]: string[] } = {};
+
+  // 用于保护容器池的并发操作
+  private mutex = new Mutex();
 
   // 根据容器数量动态生成容器名称
   private generateContainerNames(
@@ -98,7 +102,7 @@ export class ContainerPoolService {
   // 初始化容器池，启动所需容器
   async initialize() {
     this.containerPools = {
-      cpp: this.generateContainerNames('gcc', this.cppContainerCount),
+      cpp: this.generateContainerNames('cpp', this.cppContainerCount),
       java: this.generateContainerNames('java', this.javaContainerCount),
       python: this.generateContainerNames('python', this.pythonContainerCount),
     };
@@ -109,21 +113,40 @@ export class ContainerPoolService {
     }
   }
 
-  // 获取容器
+  // 获取容器（并发安全，检查容器状态并尝试启动未运行的容器）
   async getContainer(language: string): Promise<string> {
-    const pool = this.containerPools[language]; // 从容器池中获取对应语言的容器池
-    if (pool && pool.length > 0) {
-      return pool.pop(); // 从池中取出一个容器
-    }
-    throw new Error(`No available container for language: ${language}`);
+    return await this.mutex.runExclusive(async () => {
+      const pool = this.containerPools[language];
+      if (pool && pool.length > 0) {
+        const container = pool.pop()!;
+        try {
+          const { stdout } = await execAsync(
+            `docker inspect -f "{{.State.Running}}" ${container}`,
+          );
+
+          if (stdout.trim() !== 'true') {
+            await execAsync(`docker start ${container}`);
+          }
+        } catch (error: any) {
+          console.error(
+            `Error checking container ${container}: ${error.message}`,
+          );
+          throw new Error(`Container ${container} is not available`);
+        }
+        return container;
+      }
+      throw new Error(`No available container for language: ${language}`);
+    });
   }
 
-  // 归还容器
+  // 归还容器（并发安全）
   async returnContainer(language: string, container: string) {
-    const pool = this.containerPools[language]; // 从容器池中获取对应语言的容器池
-    if (pool) {
-      pool.push(container); // 将容器归还到池中
-    }
+    await this.mutex.runExclusive(async () => {
+      const pool = this.containerPools[language];
+      if (pool) {
+        pool.push(container);
+      }
+    });
   }
 
   // 执行容器中的命令
