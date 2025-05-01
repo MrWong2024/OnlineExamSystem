@@ -1,7 +1,7 @@
 // src/app/api/ai-check/route.ts
 import { NextResponse } from 'next/server';
 
-const BACKEND_API_URL = process.env.BACKEND_API_URL;
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export async function POST(request: Request) {
   const { code, model } = await request.json();
@@ -60,6 +60,19 @@ ${code}
 `;
 
   try {
+    // const response = await fetch('http://localhost:8080/chat/completions', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({
+    //       messages: [
+    //         { role: 'system', content: 'You are a helpful assistant skilled at reviewing and improving code.' },
+    //         { role: 'user', content: prompt }
+    //       ],
+    //       temperature: 0.3
+    //     })
+    //   });
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {

@@ -3,23 +3,27 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
+import { Request } from 'express';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
     super({
-      // 从请求头的 Bearer Token 中提取 JWT
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // 多 extractor：从 header 和 cookie 中提取 JWT
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromAuthHeaderAsBearerToken(), // 支持 Authorization: Bearer xxx
+        (req: Request) => req?.cookies?.access_token || null, // 支持 cookie 模式
+      ]),
       ignoreExpiration: false,
-      // 使用配置服务获取密钥
       secretOrKey: configService.get<string>('JWT_SECRET'),
     });
   }
 
   async validate(payload: any) {
-    // 返回解码后的 JWT payload，可以在请求中通过 req.user 访问
+    // 返回登录态用户信息，挂载到 req.user 上
     return {
-      userId: payload.sub,
+      userId: payload.userId,
+      name: payload.name,
       identifier: payload.identifier,
       role: payload.role,
     };

@@ -12,8 +12,10 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
     );
     if (!requiredRoles) {
-      return true;
+      return true; // 如果没有指定角色，默认允许访问
     }
+
+    // 获取请求中的 user（由 JwtAuthGuard 提供）
     const { user } = context.switchToHttp().getRequest();
     return requiredRoles.includes(user.role);
   }

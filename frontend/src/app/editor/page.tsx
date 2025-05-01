@@ -27,15 +27,9 @@ interface AIModel {
   displayText: string;
 }
 
-const buttonStyle: React.CSSProperties = {
-  marginRight: '10px',
-  backgroundColor: '#10a37f',
-  color: 'white',
-  border: 'none',
-  padding: '8px 16px',
-  borderRadius: '4px',
-  cursor: 'pointer'
-};
+const buttonClass =
+  "px-4 py-2 min-w-[96px] rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98] transition disabled:opacity-50 whitespace-nowrap text-center";
+
 
 const CodeEditorPage: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -142,8 +136,6 @@ const CodeEditorPage: React.FC = () => {
     }
   };
 
-  const handleZoomIn = () => setEditorFontSize((size) => size + 1);
-  const handleZoomOut = () => setEditorFontSize((size) => Math.max(size - 1, 8));
   const handleResetLayout = () => {
     setEditorFontSize(14);
     // 如果需要重置分栏位置，可通过给 PanelGroup 设置 key 来重建组件
@@ -267,14 +259,14 @@ const CodeEditorPage: React.FC = () => {
             <button 
               onClick={handlePrevQuestion} 
               disabled={currentQuestionIndex === 0}
-              style={buttonStyle}
+              className={buttonClass}
             >
               上一题
             </button>
             <button 
               onClick={handleNextQuestion} 
               disabled={currentQuestionIndex === questions.length - 1}
-              style={buttonStyle}
+              className={buttonClass}
             >
               下一题
             </button>
@@ -290,45 +282,35 @@ const CodeEditorPage: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* 顶部工具栏 */}
           <div style={{ display: 'flex', backgroundColor: '#f5f5f5', padding: '10px', alignItems: 'center' }}>
-            <button 
-              onClick={handleCompile}
-              disabled={isCompileButtonDisabled}
-              style={buttonStyle}
-            >
-              编译并运行
-            </button>
-            <button 
-              onClick={handleFormatCode}
-              style={buttonStyle}
-            >
-              代码格式化
-            </button>
-            <button 
-              onClick={handleZoomIn}
-              style={buttonStyle}
-            >
-              放大
-            </button>
-            <button 
-              onClick={handleZoomOut}
-              style={buttonStyle}
-            >
-              缩小
-            </button>
-            <button 
-              onClick={handleResetLayout}
-              style={buttonStyle}
-            >
-              恢复默认布局
-            </button>
-            {/* 新增AI检查按钮 */}
-            <button
-              onClick={handleAICheck}
-              disabled={isAICheckButtonDisabled}
-              style={buttonStyle}
-            >
-              AI检查
-            </button>
+            <div className="flex space-x-2">
+              <button 
+                onClick={handleCompile}
+                disabled={isCompileButtonDisabled}
+                className={buttonClass}
+              >
+                编译并运行
+              </button>
+              <button 
+                onClick={handleFormatCode}
+                className={buttonClass}
+              >
+                代码格式化
+              </button>
+              <button 
+                onClick={handleResetLayout}
+                className={buttonClass}
+              >
+                恢复默认布局
+              </button>
+              {/* 新增AI检查按钮 */}
+              <button
+                onClick={handleAICheck}
+                disabled={isAICheckButtonDisabled}
+                className={buttonClass}
+              >
+                AI检查
+              </button>
+            </div>
             {/* 动态加载AI模型列表，并默认选中第一个 */}
             <select 
               value={selectedAIModel} 

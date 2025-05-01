@@ -1,7 +1,7 @@
 // src/app/api/ai-models/route.ts
 import { NextResponse } from 'next/server';
 
-const BACKEND_API_URL = process.env.BACKEND_API_URL;
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 // 添加这一行来指定路由应该总是动态生成
 // export const dynamic = 'force-dynamic';

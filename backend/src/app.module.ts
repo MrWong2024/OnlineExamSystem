@@ -12,6 +12,7 @@ import { CompileModule } from './compile/compile.module';
 import { QuestionsModule } from './questions/questions.module';
 import { ContainerPoolService } from './compile/services/container-pool.service';
 import { AiModelsModule } from './ai-models/ai-models.module';
+import { SemestersModule } from './semesters/semesters.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AiModelsModule } from './ai-models/ai-models.module';
     CompileModule,
     QuestionsModule,
     AiModelsModule,
+    SemestersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,7 +1,7 @@
 // src/app/api/compile/route.ts
 import { NextResponse } from 'next/server';
 
-const backendApiUrl = process.env.BACKEND_API_URL;
+const backendApiUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export async function POST(request: Request) {
   if (!backendApiUrl) {
