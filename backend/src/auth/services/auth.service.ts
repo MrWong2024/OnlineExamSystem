@@ -20,6 +20,7 @@ export class AuthService {
   // 验证用户
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email, true);
+
     if (!user) {
       throw new UnauthorizedException('邮箱不存在');
     }

@@ -3,9 +3,12 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  // 启用 cookie parser（必须）
+  app.use(cookieParser());
 
   // 启用 CORS
   const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';

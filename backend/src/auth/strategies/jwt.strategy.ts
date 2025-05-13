@@ -11,8 +11,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       // 多 extractor：从 header 和 cookie 中提取 JWT
       jwtFromRequest: ExtractJwt.fromExtractors([
-        ExtractJwt.fromAuthHeaderAsBearerToken(), // 支持 Authorization: Bearer xxx
-        (req: Request) => req?.cookies?.access_token || null, // 支持 cookie 模式
+        (req: Request) => req?.cookies?.access_token || null, // ✅ 优先从 cookie 中读取
+        ExtractJwt.fromAuthHeaderAsBearerToken(), // ✅ 其次从 header 读取
       ]),
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('JWT_SECRET'),

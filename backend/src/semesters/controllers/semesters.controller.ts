@@ -34,7 +34,7 @@ export class SemestersController {
     @Body() createSemesterDto: CreateSemesterDto,
     @CurrentUser() user: CurrentUserPayload,
   ) {
-    return this.semestersService.create(createSemesterDto, user.userId);
+    return this.semestersService.create(createSemesterDto.name, user.userId);
   }
 
   @Put(':id')
@@ -43,11 +43,15 @@ export class SemestersController {
     @Body() updateSemesterDto: UpdateSemesterDto,
     @CurrentUser() user: CurrentUserPayload,
   ) {
-    return this.semestersService.update(id, updateSemesterDto, user.userId);
+    return this.semestersService.update(
+      id,
+      updateSemesterDto.name,
+      user.userId,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @CurrentUser() user: CurrentUserPayload) {
-    return this.semestersService.remove(id, user.userId);
+  delete(@Param('id') id: string, @CurrentUser() user: CurrentUserPayload) {
+    return this.semestersService.delete(id, user.userId);
   }
 }

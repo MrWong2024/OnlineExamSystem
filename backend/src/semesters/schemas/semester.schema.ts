@@ -9,7 +9,7 @@ export class Semester {
   @Prop({ required: true, unique: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, index: true }) // ✅ 加 index，提高查询性能
   teacherId: string; // 👉 学期归属教师
 
   @Prop({ default: Date.now })

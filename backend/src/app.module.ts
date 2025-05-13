@@ -13,6 +13,8 @@ import { QuestionsModule } from './questions/questions.module';
 import { ContainerPoolService } from './compile/services/container-pool.service';
 import { AiModelsModule } from './ai-models/ai-models.module';
 import { SemestersModule } from './semesters/semesters.module';
+import { CoursesModule } from './courses/courses.module';
+import { ClassroomsModule } from './classrooms/classrooms.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { SemestersModule } from './semesters/semesters.module';
     QuestionsModule,
     AiModelsModule,
     SemestersModule,
+    CoursesModule,
+    ClassroomsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

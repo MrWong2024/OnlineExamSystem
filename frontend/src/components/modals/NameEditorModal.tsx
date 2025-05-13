@@ -2,6 +2,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import TextInput from "@/components/ui/TextInput";
 
 interface Props {
   title?: string;
@@ -10,6 +19,7 @@ interface Props {
   onSave: (newValue: string) => void;
   onDelete?: () => void;
   onClose: () => void;
+  confirmDeleteText?: string;
 }
 
 export default function NameEditorModal({
@@ -19,58 +29,78 @@ export default function NameEditorModal({
   onSave,
   onDelete,
   onClose,
+  confirmDeleteText,
 }: Props) {
   const [value, setValue] = useState(initialValue);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     setValue(initialValue);
+    setErrorMsg("");
   }, [initialValue]);
 
+  const handleSave = () => {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      setErrorMsg(`请输入${type}名称`);
+      return;
+    }
+    onSave(trimmed);
+    onClose();
+  };
+
+  const handleDelete = () => {
+    const confirmText = confirmDeleteText || `确定要删除该${type}吗？`;
+    if (confirm(confirmText)) {
+      onDelete?.();
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-xl shadow-xl w-[90%] max-w-md">
-        <h2 className="text-lg font-bold mb-4">{title}</h2>
-        <input
-          type="text"
-          placeholder={`请输入${type}名称`}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="w-full border px-3 py-2 rounded mb-4"
-        />
-        <div className="flex justify-between items-center">
-          <div>
-            {onDelete && (
-              <button
-                onClick={() => {
-                  if (confirm(`确定删除该${type}吗？`)) {
-                    onDelete();
-                    onClose();
-                  }
-                }}
-                className="text-red-500 text-sm mr-4"
-              >
-                删除{type}
-              </button>
-            )}
-          </div>
-          <div className="space-x-2">
-            <button onClick={onClose} className="text-gray-500 text-sm">
-              取消
-            </button>
-            <button
-              onClick={() => {
-                if (value.trim()) {
-                  onSave(value.trim());
-                  onClose();
-                }
-              }}
-              className="bg-blue-600 text-white px-4 py-2 rounded text-sm"
-            >
-              保存
-            </button>
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="w-full max-w-md mx-auto bg-gray-50 border shadow-xl rounded-2xl p-6 space-y-6">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold text-gray-900">{title}</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-3">
+          <TextInput
+            label={`${type}名称`}
+            value={value}
+            onChange={setValue}
+            placeholder={`请输入${type}名称`}
+          />
+          <div className="text-sm text-red-500 min-h-[1.25rem] transition-all duration-300">
+            {errorMsg || "\u00A0"}
           </div>
         </div>
-      </div>
-    </div>
+
+        <DialogFooter className="flex items-center space-x-4">
+          {/* 左边删除按钮 */}
+          <div className="flex-1">
+            {onDelete && (
+              <Button
+                variant="link"
+                className="text-red-600"
+                onClick={handleDelete}
+              >
+                删除{type}
+              </Button>
+            )}
+          </div>
+
+          {/* 右边取消和保存按钮 */}
+          <div className="space-x-2">
+            <Button variant="outline" onClick={onClose}>
+              取消
+            </Button>
+            <Button onClick={handleSave} className="bg-blue-600 text-white hover:bg-blue-700">
+              保存
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
